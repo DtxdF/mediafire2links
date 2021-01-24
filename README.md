@@ -45,6 +45,17 @@ https://download[Irrelevante].mediafire.com/[Irrelevante]/[Irrelevante]/[Nombre 
 
 **Nota**: Todo lo que diga **[*Irrelevante*]** es para evitar colocar información que podría resultar perjudicial.
 
+# Uso con wget
+
+**wget** es una potente herramienta para la descarga de archivos. **mediafire2links** puede ser muy útil en combinación:
+
+```bash
+python3 mediafire2links.py d [Identificador] > links.txt
+wget -c -vv -i links.txt
+```
+
+Lo que haría es descargarse todos los archivos que se encuentren listados en el archivos **links.txt**
+
 # Experimental
 
 El script es experimental, cualquier colaboración es bienvenida.

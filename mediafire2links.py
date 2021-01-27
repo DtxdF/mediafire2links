@@ -3,8 +3,11 @@
 import json
 import sys
 import requests
+
+from urllib.parse import urlparse
 from bs4 import BeautifulSoup as bs4
 
+# Los tipos de archivo
 TYPE_FOLDER = 'd'
 TYPE_FILE   = 'f'
 
@@ -22,6 +25,13 @@ else:
 
 if (type == TYPE_FILE):
 	link = id
+	link_info = urlparse(link)
+	link2check = link_info.netloc.lower()
+
+	if (link2check != "mediafire.com") and (link2check != "www.mediafire.com"):
+		print("Error, el nombre del sitio web al que intenta acceder no coincide con el correspondiente.")
+		sys.exit(1)
+
 	print(get_download(link))
 
 elif (type == TYPE_FOLDER):

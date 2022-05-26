@@ -12,9 +12,22 @@ TYPE_FOLDER = 'd'
 TYPE_FILE   = 'f'
 
 def get_download(link: str) -> str:
-	new_content = requests.get(link).content
-	bs4_parsed = bs4(new_content, "lxml")
-	return bs4_parsed.find("a", {"id":"downloadButton"})["href"]
+	fin = 0
+	while fin != 1 :
+		new_content = requests.get(link)
+		if(new_content.status_code == 200):
+			new_content = new_content.content
+			fin = 1
+			bs4_parsed = bs4(new_content, "lxml")
+			try:
+				final = bs4_parsed.find("a", {"id":"downloadButton"})["href"]
+			except:
+				bs4_parsed = bs4(new_content, "lxml")
+				fin = 0
+		else:
+			new_content.raise_for_status()
+
+	return final
 
 if (len(sys.argv) < 3):
 	print("Sintaxis: %s <Tipo de archivo> <Identificador de la carpeta o dirección URL>" % (sys.argv[0]))
@@ -52,3 +65,4 @@ elif (type == TYPE_FOLDER):
 
 else:
 	print("Tipo de archivo desconocido.")
+

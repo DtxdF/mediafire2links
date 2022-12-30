@@ -24,8 +24,7 @@ async def get_downloads(files):
 	async with aiohttp.ClientSession() as session:
 		links_download = []
 		
-		for x in files:
-			url = x["links"]["normal_download"]
+		for url in files:
 			links_download.append(asyncio.ensure_future(get_download(session, url)))
 			
 		links_mediafire = await asyncio.gather(*links_download)
@@ -48,7 +47,7 @@ if (type == TYPE_FILE):
 		print("Error, el nombre del sitio web al que intenta acceder no coincide con el correspondiente.")
 		sys.exit(1)
 
-	print(get_download(link))
+	asyncio.run(get_downloads([link]))
 
 elif (type == TYPE_FOLDER):
 	folder_key = id
@@ -62,6 +61,7 @@ elif (type == TYPE_FOLDER):
 		sys.exit(1)
 
 	files = parsed["folder_content"]["files"]
+	files = [x["links"]["normal_download"] for x in files]
 	asyncio.run(get_downloads(files))
 
 else:

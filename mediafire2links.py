@@ -3,6 +3,7 @@
 import json
 import sys
 import requests
+import asyncio
 
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup as bs4
@@ -11,23 +12,24 @@ from bs4 import BeautifulSoup as bs4
 TYPE_FOLDER = 'd'
 TYPE_FILE   = 'f'
 
-def get_download(link: str) -> str:
-	fin = 0
-	while fin != 1 :
-		new_content = requests.get(link)
-		if(new_content.status_code == 200):
-			new_content = new_content.content
-			fin = 1
-			bs4_parsed = bs4(new_content, "lxml")
-			try:
-				final = bs4_parsed.find("a", {"id":"downloadButton"})["href"]
-			except:
-				bs4_parsed = bs4(new_content, "lxml")
-				fin = 0
-		else:
-			new_content.raise_for_status()
-
-	return final
+async def get_download(session, url):
+	async with session.get(url) as response:
+		new_content = await response.text()
+		bs4_parsed = bs4(new_content, "lxml")
+		final = bs4_parsed.find("a", {"id":"downloadButton"})["href"]
+		return final
+	
+async def get_downloads(files):
+	async with aiohttp.ClientSession() as session:
+		links_download = []
+		
+		for x in files:
+			url = x["links"]["normal_download"]
+			links_download.append(asyncio.ensure_future(get_download(session, url)))
+			
+		links_mediafire = await asyncio.gather(*links_download)
+		for link in links_mediafire:
+			print(link)
 
 if (len(sys.argv) < 3):
 	print("Sintaxis: %s <Tipo de archivo> <Identificador de la carpeta o dirección URL>" % (sys.argv[0]))
@@ -59,9 +61,7 @@ elif (type == TYPE_FOLDER):
 		sys.exit(1)
 
 	files = parsed["folder_content"]["files"]
-	for file in files:
-		link = get_download(file["links"]["normal_download"])
-		print(link)
+	asyncio.run(get_downloads(files))
 
 else:
 	print("Tipo de archivo desconocido.")

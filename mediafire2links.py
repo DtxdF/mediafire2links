@@ -49,7 +49,7 @@ if (type == TYPE_FILE):
 
 elif (type == TYPE_FOLDER):
 	folder_key = id
-	content = requests.get("https://www.mediafire.com/api/1.4/folder/get_content.php?r=rgfa&content_type=files&filter=all&order_by=name&order_direction=asc&chunk=1&version=1.5&folder_key=%s&response_format=json" % (folder_key)).content
+	content = requests.get("https://www.mediafire.com/api/1.5/folder/get_content.php?content_type=files&filter=all&order_by=name&order_direction=asc&chunk=1&folder_key=%s&response_format=json" % (folder_key)).content
 	content_js = json.loads(content)
 	parsed = content_js["response"]
 	status = parsed["result"]

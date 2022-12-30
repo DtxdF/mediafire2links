@@ -4,6 +4,7 @@ import json
 import sys
 import requests
 import asyncio
+import aiohttp
 
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup as bs4
